@@ -10,6 +10,10 @@ LDPATH = -Llibs/raylib
 LDLIBS = -lraylib
 INCLUDES = -Ilibs
 
+ifeq ($(OS),Windows_NT)
+	LDLIBS += -lopengl32 -lgdi32 -lwinmm
+endif
+
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 
