@@ -1,5 +1,5 @@
 #ifndef UI_H_
-#define UI_H
+#define UI_H_
 
 #define DEFAULT_SCREEN_WIDTH 640
 #define DEFAULT_SCREEN_HEIGHT 480
