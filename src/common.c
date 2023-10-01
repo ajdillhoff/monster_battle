@@ -3,6 +3,17 @@
 #include "common.h"
 #include "ui.h"
 
+gamestate_t gs;
+
+// Initialize the game
+void init_game() {
+    gs.in_combat = 0;
+
+    init_ui();
+
+    InitWindow(uis.screen_width, uis.screen_height, "Monster Battle");
+}
+
 // Poll for input and other events
 int event_loop() {
 
@@ -30,6 +41,13 @@ int run_frame() {
 
     // Render the current screen
     uis.draw();
+    
+    if (gs.in_combat) {
+        // Update game events
+
+        // Render the combat screen
+
+    }
 
     return 0;
 }
