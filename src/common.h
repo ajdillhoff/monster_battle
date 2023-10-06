@@ -1,11 +1,9 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
-typedef struct {
-    int in_combat;
-} gamestate_t;
+#define MAX_STR 128
 
-void init_game();
+void init();
 int event_loop();
 int run_frame();
 

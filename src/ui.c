@@ -77,11 +77,6 @@ void combat_menu_event() {
 // Draw function for the main menu
 int draw_main_menu() {
 
-    // Draw
-    BeginDrawing();
-
-    ClearBackground(RAYWHITE);
-
     // Draw the options
     for (int i = 0; i < uis.num_items; i++) {
         int textX = uis.screen_width / 2 - MeasureText(uis.items[i], 20) / 2;
@@ -94,8 +89,6 @@ int draw_main_menu() {
                      BLACK);
         }
     }
-
-    EndDrawing();
 
     return 0;
 }
@@ -146,11 +139,6 @@ void draw_avatar(Image avatar, Vector2 position, int size) {
 // Draw function for the combat screen
 int draw_combat_screen() {
 
-    // Draw
-    BeginDrawing();
-
-    ClearBackground(RAYWHITE);
-
     /* Combat Menu */
     draw_combat_menu();
 
@@ -159,8 +147,6 @@ int draw_combat_screen() {
 
     /* Combatant View */
     draw_combatant_view();
-
-    EndDrawing();
 
     return 0;
 }

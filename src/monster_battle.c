@@ -6,7 +6,7 @@
 
 int main(void) {
     // Initialization
-    init_game();
+    init();
 
     // Main game loop
     while (!WindowShouldClose()) {

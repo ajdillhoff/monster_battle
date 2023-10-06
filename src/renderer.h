@@ -2,6 +2,7 @@
 #define RENDERER_H_
 
 #include "raylib.h"
+#include "game.h"
 
 #define MAX_REFS 128
 
@@ -13,7 +14,7 @@ typedef struct {
     Color tint;
 } ref_entity_t;
 
-void add_ref(ref_entity_t *ref);
+void add_ref(entity_t *ent);
 void render_frame();
 
 #endif // RENDERER_H_
