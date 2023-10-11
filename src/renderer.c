@@ -15,6 +15,10 @@ void add_ref(entity_t *ent) {
     ref->scale = 0.2;
 }
 
+void clear_scene() {
+    num_entities = 0;
+}
+
 void render_frame() {
     for (int i = 0; i < num_entities; i++) {
         ref_entity_t *ref = &ref_entities[i];

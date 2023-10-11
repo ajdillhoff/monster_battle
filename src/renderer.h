@@ -18,6 +18,7 @@ typedef struct {
 } ref_entity_t;
 
 void add_ref(entity_t *ent);
+void clear_scene();
 void render_frame();
 
 #endif // RENDERER_H_

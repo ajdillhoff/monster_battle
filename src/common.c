@@ -42,10 +42,7 @@ int run_frame() {
     ClearBackground(RAYWHITE);
     
     if (gs.in_combat) {
-        // Update game events
-
-        // Render the combat screen
-        render_frame();
+        draw_active_frame();
     }
 
     // Render the UI elements (regardless of combat)
