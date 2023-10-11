@@ -3,14 +3,17 @@
 
 #include "raylib.h"
 #include "game.h"
+#include "ui.h"
+
+extern ui_state_t uis;
 
 #define MAX_REFS 128
 
 typedef struct {
     Texture2D texture;
     Vector2 position;
-    Vector2 size;
     float rotation;
+    float scale;
     Color tint;
 } ref_entity_t;
 

@@ -10,7 +10,6 @@
 void init() {
     init_ui();
     InitWindow(uis.screen_width, uis.screen_height, "Monster Battle");
-    init_game();
 }
 
 // Poll for input and other events

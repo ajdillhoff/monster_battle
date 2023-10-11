@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 
+#include "game.h"
 #include "ui.h"
 
 ui_state_t uis;
@@ -44,6 +45,7 @@ void main_menu_event() {
     switch (uis.selected_option) {
     case START_GAME:
         // Start Game
+        init_game();
         ui_combat_screen();
         break;
     case OPTIONS:
