@@ -1,10 +1,15 @@
 #include <raylib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "common.h"
 #include "ui.h"
 #include "game.h"
 #include "renderer.h"
+#include "queue_utils.h"
 
+Node *event_head = NULL;
+Node *event_tail = NULL;
 
 // Initialize the game
 void init() {
@@ -27,6 +32,24 @@ int event_loop() {
         }
     } else if (IsKeyPressed(KEY_ENTER)) {
         uis.callback();
+    }
+
+    // Get next event from the queue
+    event_t *event = dequeue(&event_head, &event_tail);
+
+    if (event != NULL) {
+        printf("Event type: %d\n", event->event_type);
+
+        switch (event->event_type) {
+        case GAME_EVENT:
+            // Game event
+            handle_game_event(event);
+            break;
+        default:
+            printf("TODO: Handle event type %d\n", event->event_type);
+        }
+
+        free(event);
     }
 
     return 0;

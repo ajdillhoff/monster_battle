@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "raylib.h"
-
 #include "game.h"
 #include "ui.h"
+#include "common.h"
 
 ui_state_t uis;
 
@@ -58,12 +59,33 @@ void main_menu_event() {
     }
 }
 
+void attack_event() {
+    // Get the target
+    int target = uis.selected_option;
+
+    if (target == uis.num_items - 1) {
+        // Return to previous menu
+    }
+
+    // Create an event to attack the selected player.
+    event_t *event = calloc(1, sizeof(event_t));
+    event->event_type = GAME_EVENT;
+    event->event_id = 1;
+    event->data = target;
+
+    enqueue(event, &event_head, &event_tail);
+}
+
 // Callback function for the combat menu
 void combat_menu_event() {
     switch (uis.selected_option) {
-    case ATTACK:
+    case ATTACK: {
         // Attack
+        event_t *event = calloc(1, sizeof(event_t));
+        event->event_type = GAME_EVENT;
+        enqueue(event, &event_head, &event_tail);
         break;
+    }
     case DEFEND:
         // Defend
         break;
@@ -99,9 +121,6 @@ void draw_combatant_view() {
     // Draw the border
     DrawRectangleRoundedLines(
         (Rectangle){20, 20, uis.screen_width - 40, uis.screen_height * 2 / 3 - 20}, 0.1, 10, 2, BLACK);
-
-    // Draw the text
-    DrawText("Combatant View", 30, 30, 20, BLACK);
 }
 
 void draw_combat_menu() {

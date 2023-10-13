@@ -31,6 +31,8 @@ typedef struct {
 
     int num_players;
     playerstate_t players[MAX_ENTITIES];
+
+    int current_player;
 } gamestate_t;
 
 extern gamestate_t gs;
@@ -38,6 +40,7 @@ extern entity_t entities[MAX_ENTITIES];
 
 void init_game();
 void update_player_positions();
+void handle_game_event(event_t *);
 void draw_active_frame();
 
 #endif /* GAME_H_ */
