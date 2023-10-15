@@ -29,8 +29,10 @@ typedef struct {
 
 void init_ui();
 void ui_main_menu();
-void ui_combat_screen();
+void ui_combat_menu();
+void ui_attack_menu();
 void main_menu_event();
+void attack_event();
 void combat_menu_event();
 int draw_main_menu();
 int draw_combat_screen();

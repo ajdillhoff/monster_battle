@@ -31,7 +31,7 @@ void ui_main_menu() {
 }
 
 // Set the UI state to the combat screen
-void ui_combat_screen() {
+void ui_combat_menu() {
     uis.num_items = 4;
     uis.items[0] = "Attack";
     uis.items[1] = "Defend";
@@ -41,13 +41,26 @@ void ui_combat_screen() {
     uis.callback = combat_menu_event;
 }
 
+void ui_attack_menu() {
+    uis.num_items = 0;
+    for (int i = 0; i < gs.num_players; i++) {
+        if (gs.players[i].team != gs.players[gs.current_player].team) {
+            uis.items[uis.num_items] = gs.players[i].name;
+            uis.num_items++;
+        }
+    }
+    uis.items[uis.num_items++] = "Back";
+    uis.draw = draw_combat_screen;
+    uis.callback = attack_event;
+}
+
 // Callback function for the main menu
 void main_menu_event() {
     switch (uis.selected_option) {
     case START_GAME:
         // Start Game
         init_game();
-        ui_combat_screen();
+        ui_combat_menu();
         break;
     case OPTIONS:
         // Options
@@ -60,7 +73,7 @@ void main_menu_event() {
 }
 
 void attack_event() {
-    // Get the target
+    // Get the target -- the selection option is not necessarily the target id
     int target = uis.selected_option;
 
     if (target == uis.num_items - 1) {

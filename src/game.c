@@ -70,25 +70,33 @@ void init_game() {
     gs.num_players++;
 }
 
+/*
+====================
+game_attack_target
+
+Executes the attack action on the selected target.
+====================
+*/
+void game_attack_target() {
+    return;
+}
+
+/*
+====================
+handle_game_event
+
+Handles game events.
+====================
+*/
 void handle_game_event(event_t *event) {
-    if (event->event_id == 0) {
-        // Populate target selection
-        int current_player_team = gs.players[gs.current_player].team;
-
-        // Loop through all players
-        for (int i = 0; i < gs.num_players; i++) {
-            // If the player is on the opposite team
-            if (gs.players[i].team != current_player_team) {
-                // Add the player to the target selection
-                uis.items[uis.num_items] = gs.players[i].name;
-                uis.num_items++;
-            }
-        }
-    } else {
-        // Attack the selected player
-        int target = event->data;
-
-        printf("Attacking player %d\n", target);
+    switch (event->event_id) {
+        case EV_ATTACK_ACTION:
+            // Show target selection
+            ui_attack_menu();
+            break;
+        case EV_ATTACK_TARGET:
+            game_attack_target();
+            break;
     }
 }
 

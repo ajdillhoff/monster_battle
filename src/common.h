@@ -6,11 +6,16 @@
 #define MAX_STR 128
 #define MAX_EVENTS 128
 
+// Event definitions
 typedef enum {
     GAME_EVENT,
-    UI_EVENT,
-    INPUT_EVENT
+    UI_EVENT
 } event_type_t;
+
+typedef enum {
+    EV_ATTACK_ACTION,
+    EV_ATTACK_TARGET,
+} entity_event_t;
 
 typedef struct {
     int event_type;
