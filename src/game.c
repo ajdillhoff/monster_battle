@@ -2,6 +2,7 @@
 #include "renderer.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 gamestate_t gs;
 entity_t entities[MAX_ENTITIES];
@@ -26,13 +27,13 @@ void update_player_positions() {
         if (gs.players[i].team == 0) {
             // Set the player's position to the left side of the screen
             entities[i].pos.x = combat_view.width * 0.05;
-            entities[i].pos.y = num_left * (combat_view.height / 4) + 25;
+            entities[i].pos.y = num_left * (combat_view.height / 4) + 50;
 
             num_left++;
         } else {
             // Set the player's position to the right side of the screen
             entities[i].pos.x = combat_view.width * 0.8;
-            entities[i].pos.y = num_right * (combat_view.height / 4) + 25;
+            entities[i].pos.y = num_right * (combat_view.height / 4) + 50;
 
             num_right++;
         }
@@ -49,6 +50,7 @@ void init_game() {
     gs.players[0].team = 0;
     gs.players[0].hp = 10;
     gs.players[0].max_hp = 10;
+    gs.players[0].has_turn = 1;
     strcpy(gs.players[0].name, "Player 1");
 
     entities[0].id = 0;
@@ -62,6 +64,7 @@ void init_game() {
     gs.players[1].team = 1;
     gs.players[1].hp = 10;
     gs.players[1].max_hp = 10;
+    gs.players[1].has_turn = 1;
     strcpy(gs.players[1].name, "Player 2");
 
     entities[1].id = 1;
@@ -77,7 +80,27 @@ game_attack_target
 Executes the attack action on the selected target.
 ====================
 */
-void game_attack_target() {
+void game_attack_target(int target) {
+
+    for (int i = 0; i < gs.num_players; i++) {
+        if (gs.players[i].team != gs.players[gs.current_player].team) {
+            if (target == 0) {
+                target = i;
+                break;
+            } else {
+                target--;
+            }
+        }
+    }
+
+    // Update rules of game
+    gs.players[target].hp -= 1;
+
+    gs.players[gs.current_player].has_turn = 0;
+    gs.current_player = (gs.current_player + 1) % gs.num_players;
+
+    ui_combat_menu();
+
     return;
 }
 
@@ -95,8 +118,45 @@ void handle_game_event(event_t *event) {
             ui_attack_menu();
             break;
         case EV_ATTACK_TARGET:
-            game_attack_target();
+            game_attack_target(event->data);
             break;
+    }
+
+    // Update round
+    int i = 0;
+
+    for (i = 0; i < gs.num_players; i++) {
+        if (gs.players[i].has_turn) {
+            break;
+        }
+    }
+
+    if (i == gs.num_players) {
+        // Check if the game is over
+        int num_left = 0;
+        int num_right = 0;
+        
+        for (int i = 0; i < gs.num_players; i++) {
+            if (gs.players[i].hp > 0) {
+                if (gs.players[i].team == 0) {
+                    num_left++;
+                } else {
+                    num_right++;
+                }
+            }
+        }
+
+        if (num_left == 0 || num_right == 0) {
+            gs.in_combat = 0;
+            ui_main_menu();
+            return;
+        }
+
+        gs.round++;
+        printf("Round %d\n", gs.round);
+        for (int i = 0; i < gs.num_players; i++) {
+            gs.players[i].has_turn = 1;
+        }
     }
 }
 
@@ -119,6 +179,7 @@ void draw_active_frame() {
     // Add the player entities to the renderer
     for (int i = 0; i < gs.num_players; i++) {
         add_ref(&entities[i]);
+        draw_player_health(i);
     }
 
     // Render the combat screen

@@ -83,7 +83,7 @@ void attack_event() {
     // Create an event to attack the selected player.
     event_t *event = calloc(1, sizeof(event_t));
     event->event_type = GAME_EVENT;
-    event->event_id = 1;
+    event->event_id = EV_ATTACK_TARGET;
     event->data = target;
 
     enqueue(event, &event_head, &event_tail);
@@ -160,9 +160,49 @@ void draw_combat_log() {
         (Rectangle){uis.screen_width * 1 / 3 + 20, uis.screen_height * 2 / 3 + 20, uis.screen_width * 2 / 3 - 40, uis.screen_height * 1 / 3 - 40},
         0.1, 10, 2, BLACK);
 
-    // Draw the text
-    DrawText("Combat Log", uis.screen_width * 1 / 3 + 30, uis.screen_height * 2 / 3 + 30, 20,
+    // Print current player's turn
+    DrawText(TextFormat("%s's turn", gs.players[gs.current_player].name),
+             uis.screen_width * 1 / 3 + 30, uis.screen_height * 2 / 3 + 30, 20,
              BLACK);
+}
+
+void draw_player_health(int player_id) {
+    // Get the player's health
+    int hp = gs.players[player_id].hp;
+    int max_hp = gs.players[player_id].max_hp;
+
+    // Get the player's position
+    Vector2 pos = entities[player_id].pos;
+
+    // Get the player's texture
+    Texture2D texture = entities[player_id].texture;
+
+    // Get the player's name
+    char *name = gs.players[player_id].name;
+
+    float scaled_width = texture.width * 0.2;
+    float scaled_height = texture.height * 0.2;
+
+    // Get the player's health bar position
+    Vector2 health_pos = { pos.x, pos.y - 20 };
+
+    // Get the player's health bar size
+    Vector2 background_size = { scaled_width, 10 };
+    Vector2 health_size = { scaled_width * ((float)hp / max_hp), 10 };
+
+    // Draw the player's health bar
+    DrawRectangleV(health_pos, background_size, RED);
+    DrawRectangleV(health_pos, health_size, GREEN);
+
+    // Draw the player's name
+    if (gs.current_player == player_id) {
+        DrawText(TextFormat("> %s <", name), pos.x, pos.y + scaled_height + 10, 20, BLACK);
+    } else {
+        DrawText(TextFormat("  %s  ", name), pos.x, pos.y + scaled_height + 10, 20, BLACK);
+    }
+
+    // Draw the player's health
+    DrawText(TextFormat("%d/%d", hp, max_hp), pos.x, pos.y - 10, 20, BLACK);
 }
 
 void draw_avatar(Image avatar, Vector2 position, int size) {

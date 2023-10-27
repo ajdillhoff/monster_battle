@@ -34,6 +34,7 @@ void ui_attack_menu();
 void main_menu_event();
 void attack_event();
 void combat_menu_event();
+void draw_player_health(int);
 int draw_main_menu();
 int draw_combat_screen();
 

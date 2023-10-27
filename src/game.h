@@ -23,6 +23,7 @@ typedef struct {
     // game info
     int id;
     int team;
+    int has_turn;
 } playerstate_t;
 
 typedef struct {
