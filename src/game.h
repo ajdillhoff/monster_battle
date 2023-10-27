@@ -19,6 +19,9 @@ typedef struct {
     char name[MAX_STR];
     int hp;
     int max_hp;
+    int accuracy;
+    int defense;
+    int damage;
 
     // game info
     int id;

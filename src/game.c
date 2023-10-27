@@ -48,8 +48,11 @@ void init_game() {
     // Initialize a test player
     gs.players[0].id = 0;
     gs.players[0].team = 0;
-    gs.players[0].hp = 10;
-    gs.players[0].max_hp = 10;
+    gs.players[0].hp = 100;
+    gs.players[0].max_hp = 100;
+    gs.players[0].accuracy = 0;
+    gs.players[0].defense = 0;
+    gs.players[0].damage = 20;
     gs.players[0].has_turn = 1;
     strcpy(gs.players[0].name, "Player 1");
 
@@ -62,8 +65,11 @@ void init_game() {
 
     gs.players[1].id = 1;
     gs.players[1].team = 1;
-    gs.players[1].hp = 10;
-    gs.players[1].max_hp = 10;
+    gs.players[1].hp = 100;
+    gs.players[1].max_hp = 100;
+    gs.players[1].accuracy = 20;
+    gs.players[1].defense = 10;
+    gs.players[1].damage = 10;
     gs.players[1].has_turn = 1;
     strcpy(gs.players[1].name, "Player 2");
 
@@ -71,6 +77,18 @@ void init_game() {
     entities[1].texture = LoadTexture("assets/2 - msN2dA9.png");
 
     gs.num_players++;
+}
+
+int calculate_hit(int accuracy, int defense) {
+    int hit = 70;
+
+    // Calculate hit
+    hit += (accuracy - defense);
+
+    // Flip a coin with %hit probability
+    hit = rand() % 100 < hit;
+
+    return hit;
 }
 
 /*
@@ -82,6 +100,7 @@ Executes the attack action on the selected target.
 */
 void game_attack_target(int target) {
 
+    // Find the selected target
     for (int i = 0; i < gs.num_players; i++) {
         if (gs.players[i].team != gs.players[gs.current_player].team) {
             if (target == 0) {
@@ -94,8 +113,16 @@ void game_attack_target(int target) {
     }
 
     // Update rules of game
-    gs.players[target].hp -= 1;
+    if (calculate_hit(gs.players[gs.current_player].accuracy, gs.players[target].defense)) {
+        printf("%s hit %s\n", gs.players[gs.current_player].name, gs.players[target].name);
+        int damage = gs.players[gs.current_player].damage;
+        int does_crit = rand() % 100 < 10;
+        gs.players[target].hp -= damage + does_crit * damage;
+    } else {
+        printf("%s missed %s\n", gs.players[gs.current_player].name, gs.players[target].name);
+    }
 
+    // Switch to next player
     gs.players[gs.current_player].has_turn = 0;
     gs.current_player = (gs.current_player + 1) % gs.num_players;
 
@@ -106,27 +133,17 @@ void game_attack_target(int target) {
 
 /*
 ====================
-handle_game_event
+update_game_state
 
-Handles game events.
+Updates the game state.
 ====================
 */
-void handle_game_event(event_t *event) {
-    switch (event->event_id) {
-        case EV_ATTACK_ACTION:
-            // Show target selection
-            ui_attack_menu();
-            break;
-        case EV_ATTACK_TARGET:
-            game_attack_target(event->data);
-            break;
-    }
-
+void update_game_state() {
     // Update round
     int i = 0;
 
     for (i = 0; i < gs.num_players; i++) {
-        if (gs.players[i].has_turn) {
+        if (gs.players[i].has_turn && gs.players[i].hp > 0) {
             break;
         }
     }
@@ -158,6 +175,27 @@ void handle_game_event(event_t *event) {
             gs.players[i].has_turn = 1;
         }
     }
+}
+
+/*
+====================
+handle_game_event
+
+Handles game events.
+====================
+*/
+void handle_game_event(event_t *event) {
+    switch (event->event_id) {
+        case EV_ATTACK_ACTION:
+            // Show target selection
+            ui_attack_menu();
+            break;
+        case EV_ATTACK_TARGET:
+            game_attack_target(event->data);
+            break;
+    }
+
+    update_game_state();
 }
 
 /*
