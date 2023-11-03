@@ -4,6 +4,7 @@
 #define DEFAULT_SCREEN_WIDTH 640
 #define DEFAULT_SCREEN_HEIGHT 480
 #define MAX_MENUITEMS 10
+#define SCALE_FACTOR 0.2
 
 // Event definitions
 #define START_GAME 0
@@ -31,8 +32,10 @@ void init_ui();
 void ui_main_menu();
 void ui_combat_menu();
 void ui_attack_menu();
+void ui_item_menu();
 void main_menu_event();
 void attack_event();
+void item_event();
 void combat_menu_event();
 void draw_player_health(int);
 int draw_main_menu();

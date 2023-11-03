@@ -27,13 +27,13 @@ void update_player_positions() {
         if (gs.players[i].team == 0) {
             // Set the player's position to the left side of the screen
             entities[i].pos.x = combat_view.width * 0.05;
-            entities[i].pos.y = num_left * (combat_view.height / 4) + 50;
+            entities[i].pos.y = num_left * (combat_view.height / 3) + 50;
 
             num_left++;
         } else {
             // Set the player's position to the right side of the screen
             entities[i].pos.x = combat_view.width * 0.8;
-            entities[i].pos.y = num_right * (combat_view.height / 4) + 50;
+            entities[i].pos.y = num_right * (combat_view.height / 3) + 50;
 
             num_right++;
         }
@@ -51,7 +51,7 @@ void init_game() {
     gs.players[0].hp = 100;
     gs.players[0].max_hp = 100;
     gs.players[0].accuracy = 0;
-    gs.players[0].defense = 0;
+    gs.players[0].defense = 10;
     gs.players[0].damage = 20;
     gs.players[0].has_turn = 1;
     strcpy(gs.players[0].name, "Player 1");
@@ -75,6 +75,21 @@ void init_game() {
 
     entities[1].id = 1;
     entities[1].texture = LoadTexture("assets/2 - msN2dA9.png");
+
+    gs.num_players++;
+
+    gs.players[2].id = 2;
+    gs.players[2].team = 1;
+    gs.players[2].hp = 120;
+    gs.players[2].max_hp = 120;
+    gs.players[2].accuracy = 20;
+    gs.players[2].defense = 10;
+    gs.players[2].damage = 10;
+    gs.players[2].has_turn = 1;
+    strcpy(gs.players[2].name, "Player 3");
+
+    entities[2].id = 2;
+    entities[2].texture = LoadTexture("assets/4 - JDrqfVv.png");
 
     gs.num_players++;
 }
@@ -115,20 +130,47 @@ void game_attack_target(int target) {
     // Update rules of game
     if (calculate_hit(gs.players[gs.current_player].accuracy, gs.players[target].defense)) {
         printf("%s hit %s\n", gs.players[gs.current_player].name, gs.players[target].name);
-        int damage = gs.players[gs.current_player].damage;
+        printf("Is defending = %d\n", gs.players[target].is_defending);
+        float defense_negation = gs.players[target].is_defending * 0.5 * gs.players[target].defense;
+        printf("Defense negation = %f\n", defense_negation);
+        int damage = gs.players[gs.current_player].damage - defense_negation;
         int does_crit = rand() % 100 < 10;
         gs.players[target].hp -= damage + does_crit * damage;
+        printf("%s hit %s for %d damage.\n", gs.players[gs.current_player].name, gs.players[target].name, damage + does_crit * damage);
     } else {
         printf("%s missed %s\n", gs.players[gs.current_player].name, gs.players[target].name);
     }
 
-    // Switch to next player
     gs.players[gs.current_player].has_turn = 0;
-    gs.current_player = (gs.current_player + 1) % gs.num_players;
-
-    ui_combat_menu();
 
     return;
+}
+
+/*
+====================
+game_player_use_item
+
+Uses an item.
+====================
+*/
+void game_player_defend() {
+    gs.players[gs.current_player].is_defending = 1;
+    gs.players[gs.current_player].has_turn = 0;
+
+    printf("[DEBUG] Player defending!\n");
+}
+
+/*
+====================
+game_player_use_item
+
+Uses an item.
+====================
+*/
+void game_player_use_item(int item_id) {
+    gs.players[gs.current_player].hp += 20;
+
+    gs.players[gs.current_player].has_turn = 0;
 }
 
 /*
@@ -139,6 +181,12 @@ Updates the game state.
 ====================
 */
 void update_game_state() {
+    // Check if the next player should go
+    if (gs.players[gs.current_player].has_turn == 0) {
+        gs.current_player = (gs.current_player + 1) % gs.num_players;
+        ui_combat_menu();
+    }
+
     // Update round
     int i = 0;
 
@@ -192,6 +240,15 @@ void handle_game_event(event_t *event) {
             break;
         case EV_ATTACK_TARGET:
             game_attack_target(event->data);
+            break;
+        case EV_PLAYER_DEFEND:
+            game_player_defend();
+            break;
+        case EV_PLAYER_ITEM_ACTION:
+            ui_item_menu();
+            break;
+        case EV_PLAYER_USE_ITEM:
+            game_player_use_item(event->data);
             break;
     }
 

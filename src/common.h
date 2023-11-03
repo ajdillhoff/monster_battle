@@ -15,6 +15,9 @@ typedef enum {
 typedef enum {
     EV_ATTACK_ACTION,
     EV_ATTACK_TARGET,
+    EV_PLAYER_DEFEND,
+    EV_PLAYER_ITEM_ACTION,
+    EV_PLAYER_USE_ITEM
 } entity_event_t;
 
 typedef struct {

@@ -54,6 +54,16 @@ void ui_attack_menu() {
     uis.callback = attack_event;
 }
 
+void ui_item_menu() {
+    for (int i = 0; i < gs.players[gs.current_player].num_items; i++) {
+        uis.items[uis.num_items] = gs.players[gs.current_player].items[i].name;
+        uis.num_items++;
+    }
+    uis.items[uis.num_items++] = "Back";
+    uis.draw = draw_combat_screen;
+    uis.callback = item_event;
+}
+
 // Callback function for the main menu
 void main_menu_event() {
     switch (uis.selected_option) {
@@ -89,6 +99,23 @@ void attack_event() {
     enqueue(event, &event_head, &event_tail);
 }
 
+void item_event() {
+    // Get the target -- the selection option is not necessarily the target id
+    int target = uis.selected_option;
+
+    if (target == uis.num_items - 1) {
+        // Return to previous menu
+    }
+
+    // Create an event to attack the selected player.
+    event_t *event = calloc(1, sizeof(event_t));
+    event->event_type = GAME_EVENT;
+    event->event_id = EV_PLAYER_USE_ITEM;
+    event->data = target;
+
+    enqueue(event, &event_head, &event_tail);
+}
+
 // Callback function for the combat menu
 void combat_menu_event() {
     switch (uis.selected_option) {
@@ -99,12 +126,23 @@ void combat_menu_event() {
         enqueue(event, &event_head, &event_tail);
         break;
     }
-    case DEFEND:
+    case DEFEND: {
         // Defend
+        event_t *event = calloc(1, sizeof(event_t));
+        event->event_type = GAME_EVENT;
+        event->event_id = EV_PLAYER_DEFEND;
+        enqueue(event, &event_head, &event_tail);
         break;
-    case ITEM:
+    }
+    case ITEM: {
         // Item
+        event_t *event = calloc(1, sizeof(event_t));
+        event->event_type = GAME_EVENT;
+        event->event_id = EV_PLAYER_ITEM_ACTION;
+        event->data = 0;
+        enqueue(event, &event_head, &event_tail);
         break;
+    }
     case RUN:
         // Run
         break;
@@ -180,8 +218,8 @@ void draw_player_health(int player_id) {
     // Get the player's name
     char *name = gs.players[player_id].name;
 
-    float scaled_width = texture.width * 0.2;
-    float scaled_height = texture.height * 0.2;
+    float scaled_width = texture.width * SCALE_FACTOR;
+    float scaled_height = texture.height * SCALE_FACTOR;
 
     // Get the player's health bar position
     Vector2 health_pos = { pos.x, pos.y - 20 };
